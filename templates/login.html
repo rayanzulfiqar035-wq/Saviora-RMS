@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+
+{% block title %}Login - Saviora RMS{% endblock %}
+
+{% block extra_css %}
+<style>
+    .login-wrapper {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .brand-large {
+        font-size: 3rem;
+        font-weight: 800;
+        margin-bottom: 2rem;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        text-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+    }
+    
+    .brand-large i {
+        color: var(--primary-color);
+        filter: drop-shadow(0 0 10px rgba(255, 107, 107, 0.5));
+    }
+    
+    .login-card {
+        width: 100%;
+        padding: 3rem 2.5rem;
+    }
+    
+    .form-floating > label {
+        color: rgba(255, 255, 255, 0.6);
+        padding-left: 1.5rem;
+    }
+    
+    .form-floating > .form-control:focus ~ label,
+    .form-floating > .form-control:not(:placeholder-shown) ~ label {
+        color: var(--primary-color);
+        transform: scale(0.85) translateY(-0.75rem) translateX(0.5rem);
+        background: transparent;
+    }
+    
+    .input-icon {
+        position: absolute;
+        top: 50%;
+        right: 1.5rem;
+        transform: translateY(-50%);
+        color: rgba(255, 255, 255, 0.4);
+        z-index: 5;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="login-wrapper">
+    <div class="brand-large">
+        <i class="bi bi-fire"></i> Saviora
+    </div>
+    
+    <div class="glass-panel login-card">
+        <h4 class="mb-4 fw-bold text-center">Staff Portal</h4>
+        
+        <form method="POST" action="{{ url_for('auth.login') }}">
+            <div class="form-floating mb-4 position-relative">
+                <input type="text" class="form-control" id="username" name="username" placeholder="Username" required autocomplete="username">
+                <label for="username">Username</label>
+                <i class="bi bi-person input-icon"></i>
+            </div>
+
+            <div class="form-floating mb-4 position-relative">
+                <input type="number" class="form-control" id="branch_id" name="branch_id" placeholder="Branch ID" required>
+                <label for="branch_id">Branch ID</label>
+                <i class="bi bi-geo-alt input-icon"></i>
+            </div>
+            
+            <div class="form-floating mb-5 position-relative">
+                <input type="password" class="form-control" id="password" name="password" placeholder="Password" required autocomplete="current-password">
+                <label for="password">Password</label>
+                <i class="bi bi-lock input-icon"></i>
+            </div>
+            
+            <button type="submit" class="btn btn-primary w-100 py-3 d-flex align-items-center justify-content-center gap-2">
+                <span>Access System</span>
+                <i class="bi bi-arrow-right-short fs-4"></i>
+            </button>
+        </form>
+        
+        <div class="text-center mt-4" style="color: rgba(255,255,255,0.4); font-size: 0.85rem;">
+            Secure Enterprise Access &copy; 2026 Saviora Group
+        </div>
+    </div>
+</div>
+{% endblock %}

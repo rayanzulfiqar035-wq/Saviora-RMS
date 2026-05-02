@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Saviora RMS{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="fw-bold mb-0">Dashboard</h2>
+    <div class="text-muted">{{ session.get('branch_id') }}</div>
+</div>
+
+<div class="row g-4">
+    <div class="col-md-3">
+        <div class="glass-panel p-4 h-100">
+            <h6 class="text-white opacity-75 mb-2">Today's Orders</h6>
+            <h3 class="fw-bold mb-0 text-white">{{ stats.today_orders }}</h3>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="glass-panel p-4 h-100">
+            <h6 class="text-white opacity-75 mb-2">Revenue</h6>
+            <h3 class="fw-bold mb-0 text-white">PKR {{ "{:,.0f}".format(stats.revenue) }}</h3>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="glass-panel p-4 h-100">
+            <h6 class="text-white opacity-75 mb-2">Active Tables</h6>
+            <h3 class="fw-bold mb-0 text-white">{{ stats.occupied_tables }} / {{ stats.total_tables }}</h3>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="glass-panel p-4 h-100">
+            <h6 class="text-white opacity-75 mb-2">Low Stock Items</h6>
+            <h3 class="fw-bold mb-0" style="color: var(--primary-color);">{{ stats.low_stock_count }}</h3>
+        </div>
+    </div>
+</div>
+
+<div class="glass-panel p-4 mt-4">
+    <h5 class="fw-bold mb-3">Quick Actions</h5>
+    <div class="d-flex gap-3 flex-wrap">
+        <a href="{{ url_for('orders.table_map') }}" class="btn btn-primary"><i class="bi bi-plus-circle me-2"></i>New Order</a>
+        <a href="{{ url_for('customers.register') }}" class="btn btn-outline-light"><i class="bi bi-person-plus me-2"></i>Register Customer</a>
+        <a href="{{ url_for('reservations.list_reservations') }}" class="btn btn-outline-light"><i class="bi bi-calendar-check me-2"></i>Reservations</a>
+    </div>
+</div>
+
+<!-- Coming Soon Toast -->
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 9999">
+    <div id="comingSoonToast" class="toast align-items-center text-white border-0" role="alert" style="background: rgba(30,30,60,0.95); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.15) !important;">
+        <div class="d-flex">
+            <div class="toast-body d-flex align-items-center gap-2">
+                <i class="bi bi-hourglass-split text-warning fs-5"></i>
+                <span id="comingSoonText">Feature coming soon!</span>
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function showComingSoon(name) {
+    document.getElementById('comingSoonText').innerText = `"${name}" feature coming soon!`;
+    const toastEl = document.getElementById('comingSoonToast');
+    const toast = new bootstrap.Toast(toastEl, { delay: 3000 });
+    toast.show();
+}
+</script>
+{% endblock %}

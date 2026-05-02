@@ -1,0 +1,164 @@
+{% extends "base.html" %}
+
+{% block title %}Manager Reports - Saviora RMS{% endblock %}
+
+{% block extra_css %}
+<style>
+    .stat-card {
+        background: var(--card-bg);
+        border: 1px solid var(--glass-border);
+        border-radius: 16px;
+        padding: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+        height: 100%;
+        transition: all 0.3s ease;
+    }
+    
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        border-color: rgba(255,255,255,0.2);
+    }
+    
+    .stat-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+    }
+    
+    .bg-primary-soft { background: rgba(255, 107, 107, 0.2); color: var(--primary-color); }
+    .bg-secondary-soft { background: rgba(78, 205, 196, 0.2); color: var(--secondary-color); }
+    .bg-warning-soft { background: rgba(241, 196, 15, 0.2); color: #f1c40f; }
+    
+    .list-group-item {
+        background: transparent;
+        border-color: var(--glass-border);
+        color: white;
+        padding: 1rem;
+    }
+    
+    .rank-badge {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        background: rgba(255,255,255,0.1);
+    }
+    
+    .rank-1 { background: linear-gradient(135deg, #ffd700, #ffb100); color: black; box-shadow: 0 0 10px rgba(255, 215, 0, 0.5); }
+    .rank-2 { background: linear-gradient(135deg, #e0e0e0, #9e9e9e); color: black; }
+    .rank-3 { background: linear-gradient(135deg, #cd7f32, #8b4513); color: white; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="fw-bold mb-0">Manager Reports</h2>
+        <div class="text-muted small">Branch ID: {{ session.get('branch_id') }} | Date: {{ today }}</div>
+    </div>
+</div>
+
+<!-- Daily Sales Summary -->
+<h5 class="fw-bold mb-3"><i class="bi bi-calendar-check me-2"></i>Daily Sales Summary</h5>
+<div class="row g-4 mb-5">
+    <div class="col-md-4">
+        <div class="stat-card">
+            <div class="stat-icon bg-primary-soft"><i class="bi bi-receipt"></i></div>
+            <div>
+                <div class="text-muted small fw-bold text-uppercase">Total Orders</div>
+                <h3 class="fw-bold mb-0">{{ daily_stats['TotalOrders'] }}</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="stat-card">
+            <div class="stat-icon bg-secondary-soft"><i class="bi bi-currency-dollar"></i></div>
+            <div>
+                <div class="text-muted small fw-bold text-uppercase">Gross Revenue</div>
+                <h3 class="fw-bold mb-0">PKR {{ "{:,.2f}".format(daily_stats['GrossRevenue']) }}</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="stat-card">
+            <div class="stat-icon bg-warning-soft"><i class="bi bi-graph-up"></i></div>
+            <div>
+                <div class="text-muted small fw-bold text-uppercase">Avg Order Value</div>
+                <h3 class="fw-bold mb-0">PKR {{ "{:,.2f}".format(daily_stats['AverageOrderValue']) }}</h3>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Top 5 Dishes -->
+    <div class="col-md-6">
+        <div class="glass-panel p-4 h-100">
+            <h5 class="fw-bold mb-4"><i class="bi bi-star me-2" style="color: #f1c40f;"></i>Top 5 Dishes</h5>
+            
+            {% if top_dishes %}
+            <div class="list-group list-group-flush">
+                {% for dish in top_dishes %}
+                <div class="list-group-item d-flex justify-content-between align-items-center">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="rank-badge {% if loop.index <= 3 %}rank-{{ loop.index }}{% endif %}">{{ loop.index }}</div>
+                        <div class="fw-bold">{{ dish.item_name }}</div>
+                    </div>
+                    <div class="badge bg-primary rounded-pill px-3">{{ dish.total_sold }} sold</div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="text-center py-4 text-muted">No sales data for today.</div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <!-- Waiter Performance -->
+    <div class="col-md-6">
+        <div class="glass-panel p-4 h-100">
+            <h5 class="fw-bold mb-4"><i class="bi bi-person-badge me-2" style="color: var(--secondary-color);"></i>Waiter Performance</h5>
+            
+            {% if waiter_perf %}
+            <div class="table-responsive">
+                <table class="table table-borderless text-white mb-0 align-middle">
+                    <thead style="border-bottom: 1px solid var(--glass-border);">
+                        <tr>
+                            <th class="text-muted small fw-bold">Waiter Name</th>
+                            <th class="text-muted small fw-bold text-center">Orders</th>
+                            <th class="text-muted small fw-bold text-end">Revenue Generated</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for waiter in waiter_perf %}
+                        <tr>
+                            <td class="fw-bold">
+                                <div class="d-flex align-items-center gap-2">
+                                    <div style="width: 30px; height: 30px; border-radius: 50%; background: rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center;" class="small">{{ waiter.first_name[0] }}</div>
+                                    {{ waiter.first_name }}
+                                </div>
+                            </td>
+                            <td class="text-center">{{ waiter.orders_handled }}</td>
+                            <td class="text-end fw-bold" style="color: var(--secondary-color);">PKR {{ "{:,.2f}".format(waiter.total_revenue) }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="text-center py-4 text-muted">No waiter performance data yet.</div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

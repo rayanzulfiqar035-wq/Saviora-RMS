@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+
+{% block title %}New Reservation - Saviora RMS{% endblock %}
+
+{% block extra_css %}
+<style>
+    .form-card {
+        background: linear-gradient(135deg, #2b2b36, #1a1a24);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: 24px;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+    }
+    .form-control {
+        background: rgba(0, 0, 0, 0.2) !important;
+        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        color: white !important;
+        border-radius: 12px;
+    }
+    .form-control:focus {
+        border-color: #ff6b6b !important;
+        box-shadow: 0 0 0 0.25rem rgba(255, 107, 107, 0.2) !important;
+    }
+    .form-floating label {
+        color: rgba(255, 255, 255, 0.6);
+    }
+    .table-select-label {
+        background: rgba(0, 0, 0, 0.2);
+        border: 2px solid rgba(255, 255, 255, 0.1);
+        border-radius: 16px;
+        transition: all 0.3s ease;
+    }
+    .btn-check:checked + .table-select-label {
+        background: linear-gradient(135deg, rgba(255, 107, 107, 0.2), rgba(255, 107, 107, 0.05));
+        border-color: #ff6b6b;
+        transform: translateY(-5px);
+        box-shadow: 0 8px 20px rgba(255, 107, 107, 0.3);
+    }
+    .btn-check:checked + .table-select-label .text-muted {
+        color: rgba(255, 255, 255, 0.8) !important;
+    }
+    .btn-check:checked + .table-select-label .fw-bold {
+        color: #ff6b6b;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-9">
+        <div class="form-card p-5 position-relative overflow-hidden">
+            <!-- Decorative Elements -->
+            <div style="position: absolute; width: 150px; height: 150px; background: rgba(255, 107, 107, 0.05); border-radius: 50%; top: -50px; right: -50px; pointer-events: none;"></div>
+            
+            <h3 class="fw-bolder mb-5" style="color: #ff6b6b; letter-spacing: -0.5px;"><i class="bi bi-calendar2-heart-fill me-3"></i>Book a Table</h3>
+            
+            <form method="POST">
+                <div class="row g-4">
+                    <!-- Customer Info -->
+                    <div class="col-md-6">
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control" id="phone" name="phone" placeholder="03XXXXXXXXX" required>
+                            <label for="phone">Customer Phone</label>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control" id="customer_name" name="customer_name" placeholder="John Doe">
+                            <label for="customer_name">Customer Name (For new guests)</label>
+                        </div>
+                    </div>
+
+                    <!-- Reservation Details -->
+                    <div class="col-md-4">
+                        <div class="form-floating mb-3">
+                            <input type="date" class="form-control" id="date" name="date" required min="{{ today }}">
+                            <label for="date">Date</label>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-floating mb-3">
+                            <input type="time" class="form-control" id="time" name="time" required>
+                            <label for="time">Time</label>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-floating mb-3">
+                            <input type="number" class="form-control" id="party_size" name="party_size" required min="1" max="20" value="2">
+                            <label for="party_size">Party Size</label>
+                        </div>
+                    </div>
+
+                    <!-- Table Selection -->
+                    <div class="col-12 mt-2">
+                        <label class="form-label text-white fw-bold mb-3"><i class="bi bi-ui-radios-grid me-2" style="color: #ff6b6b;"></i>Select Table</label>
+                        <div class="row g-3">
+                            {% for table in tables %}
+                            <div class="col-md-3 col-4">
+                                <input type="radio" class="btn-check" name="table_id" id="table_{{ table.table_id }}" value="{{ table.table_id }}" required>
+                                <label class="table-select-label w-100 py-3 text-center cursor-pointer" for="table_{{ table.table_id }}" style="cursor: pointer;">
+                                    <div class="small text-muted fw-semibold">Table</div>
+                                    <div class="fw-bolder fs-3 my-1">{{ table.table_number }}</div>
+                                    <div class="small text-muted"><i class="bi bi-people-fill me-1"></i>{{ table.seating_capacity }} Seats</div>
+                                </label>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <div class="col-12 mt-5 pt-4 border-top d-flex gap-3" style="border-color: rgba(255,255,255,0.1) !important;">
+                        <a href="{{ url_for('reservations.list_reservations') }}" class="btn btn-outline-light px-5 py-3 rounded-pill fw-bold" style="border-width: 2px;">Cancel</a>
+                        <button type="submit" class="btn flex-grow-1 py-3 rounded-pill fw-bolder text-white shadow" style="background: linear-gradient(135deg, #ff6b6b, #ee5253); border: none; font-size: 1.1rem; box-shadow: 0 6px 15px rgba(238, 82, 83, 0.4);">Confirm Booking <i class="bi bi-check-circle-fill ms-2"></i></button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

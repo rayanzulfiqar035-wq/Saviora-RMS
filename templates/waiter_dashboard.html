@@ -1,0 +1,162 @@
+{% extends "base.html" %}
+
+{% block title %}Waiter Dashboard - Saviora RMS{% endblock %}
+
+{% block extra_css %}
+<style>
+    .quick-action-card {
+        background: linear-gradient(135deg, #2b2b36, #1a1a24);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: 24px;
+        padding: 2rem 1.5rem;
+        text-align: center;
+        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        text-decoration: none;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+        color: white;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+    
+    .quick-action-card:hover {
+        transform: translateY(-8px);
+        color: white;
+    }
+    
+    .action-icon-wrapper {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.5rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .action-table {
+        background: rgba(46, 204, 113, 0.1);
+        color: #2ecc71;
+        border: 2px solid rgba(46, 204, 113, 0.3);
+    }
+    .quick-action-card:hover .action-table {
+        background: #2ecc71;
+        color: #1a1a24;
+        box-shadow: 0 5px 15px rgba(46, 204, 113, 0.4);
+    }
+    
+    .action-reserve {
+        background: rgba(254, 202, 87, 0.1);
+        color: #feca57;
+        border: 2px solid rgba(254, 202, 87, 0.3);
+    }
+    .quick-action-card:hover .action-reserve {
+        background: #feca57;
+        color: #1a1a24;
+        box-shadow: 0 5px 15px rgba(254, 202, 87, 0.4);
+    }
+    
+    .action-customer {
+        background: rgba(72, 219, 251, 0.1);
+        color: #48dbfb;
+        border: 2px solid rgba(72, 219, 251, 0.3);
+    }
+    .quick-action-card:hover .action-customer {
+        background: #48dbfb;
+        color: #1a1a24;
+        box-shadow: 0 5px 15px rgba(72, 219, 251, 0.4);
+    }
+
+    .active-order-card {
+        background: linear-gradient(135deg, #2b2b36, #1a1a24);
+        border-radius: 16px;
+        border-left: 4px solid #ff6b6b;
+        padding: 1.5rem;
+        transition: all 0.3s ease;
+    }
+    .active-order-card:hover {
+        transform: scale(1.02);
+        box-shadow: 0 8px 25px rgba(255, 107, 107, 0.15);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="mb-5 d-flex flex-column align-items-center text-center">
+    <h2 class="fw-bold mb-2">Welcome back, {{ current_user.first_name }}!</h2>
+    <p class="text-white-50 fs-5">Here's a quick overview of your current shift.</p>
+</div>
+
+<!-- Quick Actions -->
+<h5 class="fw-bold mb-4"><i class="bi bi-lightning-charge-fill me-2 text-warning"></i>Quick Actions</h5>
+<div class="row g-4 mb-5">
+    <div class="col-md-4">
+        <a href="{{ url_for('orders.table_map') }}" class="quick-action-card">
+            <div class="action-icon-wrapper action-table">
+                <i class="bi bi-grid-fill"></i>
+            </div>
+            <h4 class="fw-bold mb-1">Table Map</h4>
+            <span class="text-white-50 fs-6">View tables & take orders</span>
+        </a>
+    </div>
+    <div class="col-md-4">
+        <a href="{{ url_for('reservations.new_reservation') }}" class="quick-action-card">
+            <div class="action-icon-wrapper action-reserve">
+                <i class="bi bi-calendar-plus-fill"></i>
+            </div>
+            <h4 class="fw-bold mb-1">New Reservation</h4>
+            <span class="text-white-50 fs-6">Book a table for guests</span>
+        </a>
+    </div>
+    <div class="col-md-4">
+        <a href="{{ url_for('customers.register') }}" class="quick-action-card">
+            <div class="action-icon-wrapper action-customer">
+                <i class="bi bi-person-plus-fill"></i>
+            </div>
+            <h4 class="fw-bold mb-1">Register Customer</h4>
+            <span class="text-white-50 fs-6">Sign up a new guest</span>
+        </a>
+    </div>
+</div>
+
+<!-- My Active Tables -->
+<h5 class="fw-bold mb-4"><i class="bi bi-clipboard-data-fill me-2" style="color: #ff6b6b;"></i>My Active Orders</h5>
+<div class="row g-4">
+    {% if active_orders %}
+        {% for order in active_orders %}
+        <div class="col-md-6 col-lg-4">
+            <div class="active-order-card h-100 d-flex flex-column">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div>
+                        <span class="badge bg-danger bg-opacity-25 text-danger rounded-pill px-3 py-2 mb-2"><i class="bi bi-hash"></i> {{ order.order_id }}</span>
+                        <h4 class="fw-bold text-white mb-0">Table {{ order.table_number }}</h4>
+                    </div>
+                    <span class="badge bg-warning text-dark">{{ order.order_state }}</span>
+                </div>
+                
+                <div class="text-white-50 mb-4 fs-6">
+                    <i class="bi bi-clock me-1"></i> Ordered at {{ order.order_timestamp.strftime('%I:%M %p') }}
+                    <span class="mx-2">•</span>
+                    {{ order.order_type }}
+                </div>
+                
+                <div class="mt-auto pt-3 border-top border-secondary border-opacity-25">
+                    <a href="{{ url_for('orders.checkout_table', table_id=order.table_id) }}" class="btn btn-outline-light w-100 rounded-pill fw-bold">View Order</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div class="col-12 text-center py-5">
+            <div class="glass-panel d-inline-block p-5 rounded-4 border border-secondary border-opacity-25 border-dashed">
+                <i class="bi bi-cup-hot text-muted d-block mb-3" style="font-size: 3.5rem;"></i>
+                <h5 class="fw-bold text-white">No active orders right now.</h5>
+                <p class="text-muted mb-0">When you take orders, they will appear here.</p>
+            </div>
+        </div>
+    {% endif %}
+</div>
+
+{% endblock %}

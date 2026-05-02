@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+
+{% block title %}Reservations - Saviora RMS{% endblock %}
+
+{% block extra_css %}
+<style>
+    .res-table {
+        border-collapse: separate;
+        border-spacing: 0 30px;
+    }
+    .res-row {
+        background: linear-gradient(135deg, #2b2b36, #1a1a24);
+        border-radius: 35px;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    }
+    .res-row:hover {
+        transform: translateY(-3px) scale(1.01);
+        box-shadow: 0 8px 25px rgba(255, 107, 107, 0.2);
+        border-left: 4px solid #ff6b6b;
+    }
+    .res-row td {
+        padding: 1.2rem !important;
+        border: none !important;
+        background-color: transparent !important;
+    }
+    .res-row td:first-child {
+        border-top-left-radius: 35px;
+        border-bottom-left-radius: 35px;
+    }
+    .res-row td:last-child {
+        border-top-right-radius: 35px;
+        border-bottom-right-radius: 35px;
+    }
+    .res-badge {
+        background: #ff6b6b;
+        color: white;
+        padding: 6px 12px;
+        font-weight: bold;
+        box-shadow: 0 4px 10px rgba(255, 107, 107, 0.4);
+        border: none;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="fw-bold mb-0">Reservations</h2>
+        <p class="text-muted small mb-0">Upcoming table bookings for your branch</p>
+    </div>
+    <a href="{{ url_for('reservations.new_reservation') }}" class="btn btn-primary px-4 rounded-pill">
+        <i class="bi bi-calendar-plus me-2"></i>New Reservation
+    </a>
+</div>
+
+<div class="px-2">
+    <div class="table-responsive" style="overflow-x: visible;">
+        <table class="table table-dark table-borderless align-middle mb-0 res-table" style="background: transparent;">
+            <thead class="text-muted small text-uppercase" style="letter-spacing: 1px; font-weight: 700; background: transparent;">
+                <tr>
+                    <th class="ps-4 pb-3 border-0">Date & Time</th>
+                    <th class="pb-3 border-0">Customer</th>
+                    <th class="pb-3 border-0">Table</th>
+                    <th class="pb-3 border-0">Guests</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for res in reservations %}
+                <tr class="res-row">
+                    <td class="ps-4">
+                        <div class="fw-bolder fs-5" style="color: #dff9fb; letter-spacing: -0.5px; text-shadow: 0 1px 3px rgba(0,0,0,0.5);">{{ res.reservation_date.strftime('%d %b, %Y') }}</div>
+                        <div class="fw-bold mt-1" style="color: #feca57;"><i class="bi bi-clock-fill me-2 opacity-75"></i>{{ res.reservation_time.strftime('%I:%M %p') }}</div>
+                    </td>
+                    <td>
+                        <div class="fw-bold fs-6" style="color: #dff9fb; text-shadow: 0 1px 3px rgba(0,0,0,0.5);">{{ res.customer.name }}</div>
+                        <div class="small text-muted mt-1"><i class="bi bi-telephone-fill me-2 opacity-50"></i>{{ res.customer.phone }}</div>
+                    </td>
+                    <td>
+                        <span class="badge res-badge rounded-pill fs-6"><i class="bi bi-display me-2"></i>T-{{ res.table.table_number }}</span>
+                    </td>
+                    <td>
+                        <div class="d-flex align-items-center">
+                            <div class="rounded-circle d-flex align-items-center justify-content-center me-2" style="width: 35px; height: 35px; background: rgba(255, 107, 107, 0.1); border: 1px solid rgba(255, 107, 107, 0.2);">
+                                <i class="bi bi-people-fill" style="color: #ff6b6b;"></i>
+                            </div>
+                            <span class="fw-bold fs-5" style="color: #dff9fb; text-shadow: 0 1px 3px rgba(0,0,0,0.5);">{{ res.party_size }}</span>
+                        </div>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="4" class="text-center py-5 border-0">
+                        <div class="p-5 rounded-4 d-inline-block" style="background: rgba(255, 255, 255, 0.05); border: 2px dashed rgba(255, 255, 255, 0.15); min-width: 50%;">
+                            <i class="bi bi-calendar-x text-muted mb-3 d-block" style="font-size: 3.5rem;"></i>
+                            <h5 class="fw-bold" style="color: #dff9fb;">No upcoming reservations found.</h5>
+                            <p class="text-muted mb-0 small">When customers book tables, they will appear here.</p>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

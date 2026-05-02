@@ -1,0 +1,192 @@
+{% extends "base.html" %}
+
+{% block title %}Table Map - Saviora RMS{% endblock %}
+
+{% block extra_css %}
+<style>
+    .table-card {
+        border-radius: 24px;
+        padding: 1.8rem 1.2rem;
+        text-align: center;
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        text-decoration: none;
+        display: flex;
+        flex-direction: column;
+        color: white;
+        position: relative;
+        overflow: hidden;
+        background: linear-gradient(135deg, #2b2b36, #1a1a24);
+        height: 100%;
+    }
+    
+    .table-card:hover {
+        transform: translateY(-8px);
+        color: white;
+    }
+    
+    .table-Available { 
+        border: 2px solid #2ecc71; 
+        box-shadow: 0 10px 30px rgba(46, 204, 113, 0.15); 
+    }
+    .table-Available .table-icon { color: #2ecc71; filter: drop-shadow(0 4px 8px rgba(46, 204, 113, 0.4)); }
+    .table-Available .table-state-badge { background: #2ecc71; color: #1a1a24; box-shadow: 0 4px 10px rgba(46, 204, 113, 0.4); }
+
+    .table-Occupied { 
+        border: 2px solid #ff6b6b; 
+        box-shadow: 0 10px 30px rgba(255, 107, 107, 0.15); 
+    }
+    .table-Occupied .table-icon { color: #ff6b6b; filter: drop-shadow(0 4px 8px rgba(255, 107, 107, 0.4)); }
+    .table-Occupied .table-state-badge { background: #ff6b6b; color: white; box-shadow: 0 4px 10px rgba(255, 107, 107, 0.4); }
+
+    .table-Reserved { 
+        border: 2px solid #feca57; 
+        box-shadow: 0 10px 30px rgba(254, 202, 87, 0.15); 
+    }
+    .table-Reserved .table-icon { color: #feca57; filter: drop-shadow(0 4px 8px rgba(254, 202, 87, 0.4)); }
+    .table-Reserved .table-state-badge { background: #feca57; color: #1a1a24; box-shadow: 0 4px 10px rgba(254, 202, 87, 0.4); }
+
+    .table-Cleaning { 
+        border: 2px solid #48dbfb; 
+        box-shadow: 0 10px 30px rgba(72, 219, 251, 0.15); 
+    }
+    .table-Cleaning .table-icon { color: #48dbfb; filter: drop-shadow(0 4px 8px rgba(72, 219, 251, 0.4)); }
+    .table-Cleaning .table-state-badge { background: #48dbfb; color: #1a1a24; box-shadow: 0 4px 10px rgba(72, 219, 251, 0.4); }
+
+    .table-icon {
+        font-size: 3.5rem;
+        margin-bottom: 0.8rem;
+        margin-top: 1rem;
+        z-index: 1;
+    }
+    
+    .table-number {
+        font-size: 1.6rem;
+        font-weight: 800;
+        margin-bottom: 0.3rem;
+        z-index: 1;
+    }
+    
+    .table-capacity {
+        font-size: 0.95rem;
+        opacity: 0.8;
+        z-index: 1;
+        margin-bottom: 1rem;
+    }
+    
+    .table-state-badge {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        font-size: 0.75rem;
+        font-weight: bold;
+        letter-spacing: 0.5px;
+        padding: 6px 12px;
+        border-radius: 20px;
+        z-index: 2;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="fw-bold mb-0">Dining Area Map</h2>
+    <a href="{{ url_for('orders.takeaway') }}" class="btn btn-primary rounded-pill px-4">
+        <i class="bi bi-bag-check me-2"></i>New Takeaway Order
+    </a>
+</div>
+
+<div class="glass-panel p-4 mb-4">
+    <div class="d-flex gap-4">
+        <div class="d-flex align-items-center gap-2">
+            <div style="width: 15px; height: 15px; border-radius: 50%; background: #2ecc71;"></div>
+            <small>Available</small>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+            <div style="width: 15px; height: 15px; border-radius: 50%; background: #e74c3c;"></div>
+            <small>Occupied</small>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    {% for table in tables %}
+    <div class="col-md-3 col-sm-4 col-6">
+        {% if table.table_state == 'Occupied' %}
+            <div class="table-card table-Occupied">
+                <div class="table-state-badge">Occupied</div>
+                <i class="bi bi-people-fill table-icon text-danger"></i>
+                <div class="table-number">T-{{ table.table_number }}</div>
+                <div class="d-flex flex-column gap-2 mt-3">
+                    <a href="{{ url_for('orders.order_entry', table_id=table.table_id) }}" class="btn btn-sm btn-outline-light rounded-pill">Add Items</a>
+                    <a href="{{ url_for('orders.checkout_table', table_id=table.table_id) }}" class="btn btn-sm btn-primary rounded-pill fw-bold">Checkout</a>
+                </div>
+            </div>
+        {% else %}
+            <a href="{{ url_for('orders.order_entry', table_id=table.table_id) }}" class="table-card table-{{ table.table_state }}">
+                <i class="bi bi-display table-icon"></i>
+                <div class="table-number">T-{{ table.table_number }}</div>
+                <div class="table-capacity"><i class="bi bi-people-fill me-1"></i> {{ table.seating_capacity }} Seats</div>
+            </a>
+        {% endif %}
+    </div>
+    {% else %}
+    <div class="col-12 text-center py-5">
+        <p class="text-muted">No physical tables found for this branch.</p>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Takeaway Orders Section -->
+<h3 class="fw-bold mt-5 mb-4" style="color: #ff6b6b; text-shadow: 0 2px 4px rgba(0,0,0,0.1);"><i class="bi bi-lightning-charge-fill me-2"></i>Active Takeaway Orders</h3>
+<div class="row g-4">
+    {% for order in takeaway_orders %}
+    <div class="col-md-3 col-sm-4 col-6">
+        <div class="table-card h-100 d-flex flex-column" 
+             style="background: linear-gradient(135deg, #2b2b36, #1a1a24); 
+                    border: 2px solid #ff6b6b; 
+                    border-radius: 24px; 
+                    box-shadow: 0 10px 30px rgba(255, 107, 107, 0.2);
+                    padding: 1.8rem 1.2rem;
+                    position: relative; overflow: hidden;">
+            
+            <!-- Decorative circle -->
+            <div style="position: absolute; width: 120px; height: 120px; background: rgba(255, 107, 107, 0.05); border-radius: 50%; top: -30px; left: -30px; pointer-events: none;"></div>
+
+            <div class="table-state-badge" style="background: #ff6b6b; color: white; font-weight: bold; border-radius: 20px; padding: 6px 12px; font-size: 0.75rem; letter-spacing: 0.5px; top: 15px; right: 15px; box-shadow: 0 4px 10px rgba(255, 107, 107, 0.4);">TAKEAWAY</div>
+            
+            <div class="mt-2 mb-3 z-1">
+                <i class="bi bi-bag-check-fill table-icon" style="color: #ff6b6b; font-size: 3.2rem; filter: drop-shadow(0 4px 8px rgba(255, 107, 107, 0.3));"></i>
+            </div>
+            
+            <div class="table-number text-white fw-bolder mb-2 z-1" style="font-size: 1.5rem;">Order #{{ order.order_id }}</div>
+            
+            <div class="mb-2 z-1">
+                <span class="badge rounded-pill" style="background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2); padding: 6px 12px; font-size: 0.85rem;">
+                    Status: <span style="color: #4cd137;">{{ order.order_state }}</span>
+                </span>
+            </div>
+            
+            <div class="fw-bold my-3 z-1" style="font-size: 1.6rem; color: #feca57; text-shadow: 0 2px 4px rgba(0,0,0,0.4);">
+                Rs. {{ "%.2f"|format(order.subtotal) }}
+            </div>
+            
+            <div class="mt-auto pt-3 z-1">
+                <a href="{{ url_for('billing.checkout', order_id=order.order_id) }}" 
+                   class="btn w-100 fw-bold rounded-pill text-white" 
+                   style="background: linear-gradient(135deg, #ff6b6b, #ee5253); border: none; padding: 10px 0; box-shadow: 0 6px 15px rgba(238, 82, 83, 0.4); transition: transform 0.2s;">
+                   Checkout <i class="bi bi-arrow-right fw-bold ms-1"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="col-12 text-center py-5">
+        <div class="p-5 rounded-4 d-inline-block" style="background: rgba(255, 255, 255, 0.05); border: 2px dashed rgba(255, 255, 255, 0.15); min-width: 50%;">
+            <i class="bi bi-inbox text-muted mb-3 d-block" style="font-size: 3.5rem;"></i>
+            <h5 class="text-white fw-bold">No active takeaway orders right now</h5>
+            <p class="text-muted mb-0 small">New orders will appear here automatically</p>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

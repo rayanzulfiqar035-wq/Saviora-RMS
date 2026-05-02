@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+
+{% block title %}Kitchen Display - Saviora RMS{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="fw-bold mb-0"><i class="bi bi-display me-2"></i>Kitchen Display</h2>
+    <div class="d-flex gap-2">
+        <button class="btn btn-outline-light" onclick="location.reload()">
+            <i class="bi bi-arrow-clockwise"></i> Refresh
+        </button>
+    </div>
+</div>
+
+<div class="row g-4">
+    {% for order in orders %}
+    <div class="col-md-6 col-lg-4">
+        <div class="glass-panel p-4 h-100 {% if order.order_state == 'Preparing' %}border-warning{% endif %}">
+            <div class="d-flex justify-content-between align-items-start mb-3">
+                <div>
+                    <h5 class="mb-1 fw-bold">Order #{{ order.order_id }}</h5>
+                    <span class="badge {% if order.order_type == 'Dine-In' %}bg-primary{% else %}bg-info{% endif %}">
+                        {{ order.order_type }}
+                    </span>
+                    <span class="badge {% if order.order_state == 'Pending' %}bg-secondary{% else %}bg-warning text-dark{% endif %}">
+                        {{ order.order_state }}
+                    </span>
+                </div>
+                <div class="text-end">
+                    <small class="text-white-50">{{ order.order_timestamp.strftime('%H:%M') }}</small>
+                    <div class="fw-bold mt-1">Table {{ order.table.table_number }}</div>
+                </div>
+            </div>
+
+            <hr class="border-secondary opacity-25">
+
+            <div class="order-items mb-4">
+                <ul class="list-unstyled mb-0">
+                    {% for item in order.items %}
+                    <li class="mb-2">
+                        <div class="d-flex justify-content-between">
+                            <span class="fw-bold">{{ item.quantity }}x {{ item.menu_item.item_name }}</span>
+                        </div>
+                        {% if item.modifications %}
+                        <ul class="list-unstyled ms-3 small text-white-50">
+                            {% for mod in item.modifications %}
+                            <li>
+                                - No {{ mod.removed_ingredient.ingredient_name }}
+                                + Add {{ mod.added_ingredient.ingredient_name }}
+                            </li>
+                            {% endfor %}
+                        </ul>
+                        {% endif %}
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+            <div class="mt-auto pt-3 border-top border-secondary opacity-75">
+                {% if order.order_state == 'Pending' %}
+                <button class="btn btn-warning w-100" onclick="updateOrderStatus({{ order.order_id }}, 'Preparing')">
+                    Start Preparing
+                </button>
+                {% elif order.order_state == 'Preparing' %}
+                <button class="btn btn-success w-100" onclick="updateOrderStatus({{ order.order_id }}, 'Served')">
+                    Mark as Served
+                </button>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="col-12">
+        <div class="glass-panel p-5 text-center text-white-50">
+            <i class="bi bi-check-circle display-1 mb-3"></i>
+            <h4>All Caught Up!</h4>
+            <p>No active orders in the kitchen queue right now.</p>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function updateOrderStatus(orderId, newState) {
+    // In a real app, this would be an AJAX call to update the order state
+    // For now, we can just reload the page or show an alert.
+    fetch(`/orders/api/update_state/${orderId}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ state: newState })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            location.reload();
+        } else {
+            alert('Failed to update order status');
+        }
+    })
+    .catch(error => console.error('Error:', error));
+}
+</script>
+{% endblock %}
