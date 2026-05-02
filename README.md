@@ -80,4 +80,3 @@ The system uses a highly optimized schema with:
 ## 📜 License
 This project is for educational and commercial management use. 
 
-**Developed with ❤️ for the Saviora Restaurant Group.**
