@@ -8,8 +8,8 @@ inventory_bp = Blueprint('inventory', __name__, url_prefix='/inventory')
 @inventory_bp.route('/')
 @login_required
 def dashboard():
-    # Only Admin, Manager can see Inventory
-    if session.get('role_id') not in [1, 2]:
+    # Only Manager, Assistant Manager, or Inventory Manager can see Inventory
+    if session.get('role_id') not in [1, 2, 8]:
         flash("You do not have permission to view the inventory.", "danger")
         return redirect(url_for('index'))
         

@@ -246,7 +246,7 @@
                 <span class="nav-icon"><i class="bi bi-grid-1x2-fill"></i></span> Dashboard
             </a>
             
-            {% if session.get('role_id') in [1, 3] %} <!-- Admin, Waiter -->
+            {% if session.get('role_id') in [1, 2, 5, 6] %} <!-- Manager, Assistant, Waiter, Cashier -->
             <a class="nav-link {% if request.endpoint in ['orders.table_map', 'orders.order_entry', 'orders.takeaway'] %}active{% endif %}" href="{{ url_for('orders.table_map') }}">
                 <span class="nav-icon"><i class="bi bi-ui-checks-grid"></i></span> Table Map
             </a>
@@ -258,19 +258,22 @@
             </a>
             {% endif %}
             
-            {% if session.get('role_id') in [1, 3] %} <!-- Admin & Waiter -->
+            {% if session.get('role_id') in [1, 2, 3, 4, 5] %} <!-- Managers, Chefs, Waiters -->
             <a class="nav-link {% if request.endpoint == 'orders.kitchen_display' %}active{% endif %}" href="{{ url_for('orders.kitchen_display') }}">
                 <span class="nav-icon"><i class="bi bi-display"></i></span> Kitchen Display
             </a>
             {% endif %}
             
-            {% if session.get('role_id') == 1 %} <!-- Admin Only -->
-            <a class="nav-link {% if request.endpoint == 'inventory.dashboard' %}active{% endif %}" href="{{ url_for('inventory.dashboard') }}">
-                <span class="nav-icon"><i class="bi bi-box-seam"></i></span> Inventory
-            </a>
-            <a class="nav-link {% if request.endpoint == 'reports.dashboard' %}active{% endif %}" href="{{ url_for('reports.dashboard') }}">
-                <span class="nav-icon"><i class="bi bi-graph-up-arrow"></i></span> Reports
-            </a>
+            {% if session.get('role_id') in [1, 2, 8] %} <!-- Management & Inventory Manager -->
+                <a class="nav-link {% if request.endpoint == 'inventory.dashboard' %}active{% endif %}" href="{{ url_for('inventory.dashboard') }}">
+                    <span class="nav-icon"><i class="bi bi-box-seam"></i></span> Inventory
+                </a>
+            {% endif %}
+            
+            {% if session.get('role_id') in [1, 2] %} <!-- Management Only -->
+                <a class="nav-link {% if request.endpoint == 'reports.dashboard' %}active{% endif %}" href="{{ url_for('reports.dashboard') }}">
+                    <span class="nav-icon"><i class="bi bi-graph-up-arrow"></i></span> Reports
+                </a>
             {% endif %}
         </div>
 

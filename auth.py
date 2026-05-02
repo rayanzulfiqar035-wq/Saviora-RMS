@@ -25,9 +25,9 @@ def login():
                 flash(f'Access Denied: You are not authorized for Branch {branch_id}.', 'danger')
                 return redirect(url_for('auth.login'))
 
-            # Restrict login to only Admin (1) and Waiter (3)
-            if user.role_id not in [1, 3]:
-                flash('Access Denied: Only Admin and Waiter accounts can log in.', 'danger')
+            # Restrict login to Management, Waiters, and Cashiers
+            if user.role_id not in [1, 2, 5, 6]:
+                flash('Access Denied: You do not have permission to log in here.', 'danger')
                 return redirect(url_for('auth.login'))
                 
             login_user(user)

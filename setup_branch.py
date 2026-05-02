@@ -51,12 +51,12 @@ def setup_single_branch():
         )
         db.session.add(admin)
         
-        # 9 Waiters (Role 3)
+        # 9 Waiters (Role 5)
         for i in range(2, 11):
             waiter = Staff(
                 staff_id=i,
                 branch_id=1,
-                role_id=3,
+                role_id=5,
                 username=f"waiter{i-1}",
                 password_hash=f"waiter{i-1}",
                 first_name=f"Waiter {i-1}"

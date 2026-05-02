@@ -55,10 +55,10 @@ pip install -r requirements.txt
 ```
 
 ### 3. Database Configuration
-1. Create a MySQL database named `Restaurant_db`.
+1. Create a MySQL database named `restaurant_db`.
 2. Import the master script:
 ```bash
-mysql -u your_username -p Restaurant_db < saviora_master_setup.sql
+mysql -u your_username -p restaurant_db < saviora_master_setup.sql
 ```
 
 ### 4. Run the Application

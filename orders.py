@@ -8,8 +8,8 @@ orders_bp = Blueprint('orders', __name__, url_prefix='/orders')
 @orders_bp.route('/table_map')
 @login_required
 def table_map():
-    # Waiters, Managers, Admins, Cashiers can see this
-    if session.get('role_id') in [4]: # Chef cannot see table map
+    # Waiters, Managers, Assistant Managers, Cashiers can see this
+    if session.get('role_id') in [3, 4, 7, 9]: # Chef, Cleaner, Rider cannot see table map
         flash("Unauthorized access.", "danger")
         return redirect(url_for('index'))
         
@@ -74,7 +74,8 @@ def order_entry(table_id):
 @orders_bp.route('/kitchen')
 @login_required
 def kitchen_display():
-    if session.get('role_id') not in [1, 3]: # Admin and Waiter
+    # Managers, Assistants, and Chefs can see Kitchen Display
+    if session.get('role_id') not in [1, 2, 3, 4]: 
         flash("Unauthorized access.", "danger")
         return redirect(url_for('index'))
         
@@ -207,7 +208,8 @@ def place_order():
 @orders_bp.route('/api/update_state/<int:order_id>', methods=['POST'])
 @login_required
 def update_order_state(order_id):
-    if session.get('role_id') not in [1, 4, 3, 2]: # Admin, Chef, Waiter, Manager
+    # Managers, Assistants, Chefs, and Waiters can update state
+    if session.get('role_id') not in [1, 2, 3, 4, 5]:
         return jsonify({'status': 'error', 'message': 'Unauthorized'})
         
     data = request.json

@@ -1,5 +1,5 @@
 from flask import Flask, render_template, session
-from flask_login import LoginManager, login_required
+from flask_login import LoginManager, login_required, current_user
 from models import db, DiningTable, InventoryItem, IngredientCatalog, BranchInventory
 from sqlalchemy import text
 import os
@@ -51,7 +51,7 @@ def create_app():
         branch_id = session.get('branch_id')
         role_id = session.get('role_id')
         
-        if role_id == 3: # Waiter
+        if role_id == 5: # Waiter
             try:
                 active_orders = db.session.execute(
                     text("SELECT * FROM vw_waiter_active_orders WHERE staff_id = :staff_id ORDER BY order_timestamp DESC"),

@@ -10,7 +10,8 @@ reports_bp = Blueprint('reports', __name__, url_prefix='/reports')
 @login_required
 def dashboard():
     # Only Admin can see Reports in the new 2-role system
-    if session.get('role_id') != 1:
+    # Manager and Assistant Manager can see Reports
+    if session.get('role_id') not in [1, 2]:
         flash("You do not have permission to view reports.", "danger")
         return redirect(url_for('index'))
         
@@ -55,7 +56,7 @@ def dashboard():
         func.count(Order.order_id).label('orders_handled'),
         func.sum(Order.subtotal).label('total_revenue')
     ).join(Order, Order.staff_id == Staff.staff_id)\
-     .filter(Order.branch_id == branch_id, Staff.role_id == 3)\
+     .filter(Order.branch_id == branch_id, Staff.role_id == 5)\
      .group_by(Staff.first_name)\
      .order_by(func.sum(Order.subtotal).desc()).all()
      
